@@ -233,6 +233,8 @@ void QVOptionsDialog::syncSettings(bool defaults, bool makeConnections)
     syncComboBox(ui->afterDeletionComboBox, "afterdelete", defaults, makeConnections);
     // askdelete
     syncCheckbox(ui->askDeleteCheckbox, "askdelete", defaults, makeConnections);
+    // askdeletepermanent
+    syncCheckbox(ui->askDeletePermanentCheckbox, "askdeletepermanent", defaults, makeConnections);
     // allowmimecontentdetection
     syncCheckbox(ui->mimeContentDetectionCheckbox, "allowmimecontentdetection", defaults,
                  makeConnections);

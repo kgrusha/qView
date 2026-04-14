@@ -778,6 +778,11 @@ void MainWindow::askDeleteFile(bool permanent)
         return;
     }
 
+    if (permanent && !qvApp->getSettingsManager().getBool(SettingsManager::Setting::AskDeletePermanent)) {
+        deleteFile(permanent);
+        return;
+    }
+
     const QFileInfo &fileInfo = getCurrentFileDetails().fileInfo;
     const QString fileName = getCurrentFileDetails().fileInfo.fileName();
 
@@ -802,17 +807,16 @@ void MainWindow::askDeleteFile(bool permanent)
 
     auto *msgBox = new QMessageBox(QMessageBox::Question, tr("Delete"), messageText,
                                    QMessageBox::Yes | QMessageBox::No, this);
-    if (!permanent)
-        msgBox->setCheckBox(new QCheckBox(tr("Do not ask again")));
+    msgBox->setCheckBox(new QCheckBox(tr("Do not ask again")));
 
     connect(msgBox, &QMessageBox::finished, this, [this, msgBox, permanent](int result) {
         if (result != QMessageBox::Yes)
             return;
 
-        if (!permanent) {
+        if (msgBox->checkBox()->isChecked()) {
             QSettings settings;
             settings.beginGroup("options");
-            settings.setValue("askdelete", !msgBox->checkBox()->isChecked());
+            settings.setValue(permanent ? "askdeletepermanent" : "askdelete", false);
             qvApp->getSettingsManager().loadSettings();
         }
         this->deleteFile(permanent);
