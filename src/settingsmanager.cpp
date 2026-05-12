@@ -53,6 +53,7 @@ static const SettingDefinition settingDefinitions[] = {
     { SettingsManager::Setting::SlideshowTimer, 5, "slideshowtimer" },
     { SettingsManager::Setting::AfterDelete, 2, "afterdelete" },
     { SettingsManager::Setting::AskDelete, true, "askdelete" },
+    { SettingsManager::Setting::AskDeletePermanent, true, "askdeletepermanent" },
     { SettingsManager::Setting::AllowMimeContentDetection, false, "allowmimecontentdetection" },
     { SettingsManager::Setting::SaveRecents, true, "saverecents" },
     { SettingsManager::Setting::UpdateNotifications, false, "updatenotifications" },

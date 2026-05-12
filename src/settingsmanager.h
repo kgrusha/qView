@@ -49,6 +49,7 @@ public:
         SlideshowTimer,
         AfterDelete,
         AskDelete,
+        AskDeletePermanent,
         AllowMimeContentDetection,
         SaveRecents,
         UpdateNotifications,
