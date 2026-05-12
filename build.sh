@@ -49,11 +49,33 @@ if $CLEAN && [ -d "build" ]; then
     rm -rf build
 fi
 
-echo "Configuring with: cmake -B build -G Ninja $CMAKE_ARGS"
+# Homebrew Qt: CMake does not search Cellar paths by default.
+if [[ -z "${CMAKE_PREFIX_PATH:-}" ]] && command -v brew >/dev/null 2>&1; then
+    for _brew_qt_formula in qt qt@6; do
+        _brew_qt="$(brew --prefix "$_brew_qt_formula" 2>/dev/null)"
+        if [[ -n "$_brew_qt" ]] && {
+            [[ -f "$_brew_qt/lib/cmake/Qt6/Qt6Config.cmake" ]] ||
+                [[ -f "$_brew_qt/lib/cmake/Qt5/Qt5Config.cmake" ]]
+        }; then
+            export CMAKE_PREFIX_PATH="$_brew_qt"
+            echo "CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH (Homebrew $_brew_qt_formula)"
+            break
+        fi
+    done
+    unset _brew_qt _brew_qt_formula
+fi
+
+# Prefer Ninja when installed (faster incremental builds); CMake default otherwise.
+CMAKE_GEN=()
+if command -v ninja >/dev/null 2>&1; then
+    CMAKE_GEN=(-G Ninja)
+fi
+
+echo "Configuring with: cmake -B build${CMAKE_GEN:+ ${CMAKE_GEN[*]}} $CMAKE_ARGS"
 
 # Run CMake configuration.
-cmake -B build $CMAKE_ARGS
+cmake -B build "${CMAKE_GEN[@]}" $CMAKE_ARGS || exit 1
 
 # Run the build
 echo "Building project..."
-cmake --build build --parallel
+cmake --build build --parallel || exit 1
